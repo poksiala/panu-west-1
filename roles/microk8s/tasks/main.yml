@@ -16,13 +16,6 @@
     append: yes
   become: yes
 
-- name: chown ~/.kube
-  ansible.builtin.file:
-    path: /home/ubuntu/.kube
-    state: directory
-    owner: ubuntu
-    recurse: true
-
 - name: Flush handlers
   meta: flush_handlers
 
@@ -42,3 +35,31 @@
       DNS.8 = kube01.pohina.io
       DNS.9 = kube02.pohina.io
       DNS.10 = k8s.atk.works
+
+- name: Generate join token
+  ansible.builtin.set_fact:
+    join_token: "{{ lookup('password', '/dev/null chars=ascii_lowercase,digits length=32') }}"
+  when: is_primary
+  tags: never
+
+- name: Accept joins nodes
+  command: "microk8s.add-node --token-ttl 300 --token {{ join_token }}"
+  changed_when: yes
+  when: is_primary
+  tags: never
+
+- name: Join nodes
+  command: "microk8s.join {{ inventory_hostname }}:25000/{{ join_token }}"
+  changed_when: yes
+  when: is_primary
+  delegate_to: "{{ item }}"
+  with_items: "{{ play_hosts | difference([inventory_hostname]) }}"
+  tags: never
+
+- name: chown ~/.kube
+  ansible.builtin.file:
+    path: /home/ubuntu/.kube
+    state: directory
+    owner: ubuntu
+    recurse: true
+  become: yes
