@@ -1,0 +1,13 @@
+- hosts: kube_servers
+  tasks:
+    - name: Uninstall Microk8s
+      community.general.snap:
+        state: absent
+        name: microk8s
+      become: yes
+
+    - name: Delete ~/.kube
+      ansible.builtin.file:
+        path: /home/ubuntu/.kube
+        state: absent
+      become: yes
