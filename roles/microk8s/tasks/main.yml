@@ -19,10 +19,54 @@
 - name: Flush handlers
   meta: flush_handlers
 
-- name: Create kubectl alias
+- name: Add ipv6 cidr to kube-proxy
   ansible.builtin.lineinfile:
-    path: /home/ubuntu/.bash_aliases
-    line: alias kubectl="microk8s.kubectl"
+    path: /var/snap/microk8s/current/args/kube-proxy
+    regexp: "^--cluster-cidr.*$"
+    line: "--cluster-cidr=10.1.0.0/16,fd01::/64"
+  become: yes
+  notify: Restart Microk8s
+
+- name: Enable dualstack in kube-proxy
+  ansible.builtin.lineinfile:
+    path: /var/snap/microk8s/current/args/kube-proxy
+    line: '--feature-gates="IPv6DualStack=true"'
+  become: yes
+  notify: Restart Microk8s
+
+- name: Adjust service cluster ip range in kube-apiserver
+  ansible.builtin.lineinfile:
+    path: /var/snap/microk8s/current/args/kube-apiserver
+    regexp: "^--service-cluster-ip-range.*$"
+    line: "--service-cluster-ip-range=10.152.183.0/24,fd98::/108"
+  become: yes
+  notify: Restart Microk8s
+
+- name: Enable dualstack in kube-apiserver
+  ansible.builtin.lineinfile:
+    path: /var/snap/microk8s/current/args/kube-apiserver
+    regexp: "^--feature-gates.*$"
+    line: '--feature-gates="IPv6DualStack=true"'
+  become: yes
+  notify: Restart Microk8s
+
+- name: Enable dualstack in kube-controller-manager
+  ansible.builtin.lineinfile:
+    path: /var/snap/microk8s/current/args/kube-controller-manager
+    line: "{{ item }}"
+  with_items:
+    - '--feature-gates="IPv6DualStack=true"'
+    - "--service-cluster-ip-range=10.152.183.0/24,fd98::/108"
+    - "--cluster-cidr=10.1.0.0/16,fd01::/64"
+  become: yes
+  notify: Restart Microk8s
+
+- name: Enable dualstack in kubelet
+  ansible.builtin.lineinfile:
+    path: /var/snap/microk8s/current/args/kubelet
+    line: '--feature-gates="IPv6DualStack=true"'
+  become: yes
+  notify: Restart Microk8s
 
 - name: Add DNS names
   ansible.builtin.blockinfile:
@@ -35,18 +79,20 @@
       DNS.8 = kube01.pohina.io
       DNS.9 = kube02.pohina.io
       DNS.10 = k8s.atk.works
+  notify: Wait 30s
+
+- name: Flush handlers
+  meta: flush_handlers
 
 - name: Generate join token
   ansible.builtin.set_fact:
     join_token: "{{ lookup('password', '/dev/null chars=ascii_lowercase,digits length=32') }}"
   when: is_primary
-  tags: never
 
 - name: Accept joins nodes
-  command: "microk8s.add-node --token-ttl 300 --token {{ join_token }}"
+  command: "microk8s.add-node --token-ttl 600 --token {{ join_token }}"
   changed_when: yes
   when: is_primary
-  tags: never
 
 - name: Join nodes
   command: "microk8s.join {{ inventory_hostname }}:25000/{{ join_token }}"
@@ -54,7 +100,6 @@
   when: is_primary
   delegate_to: "{{ item }}"
   with_items: "{{ play_hosts | difference([inventory_hostname]) }}"
-  tags: never
 
 - name: chown ~/.kube
   ansible.builtin.file:
@@ -63,3 +108,8 @@
     owner: ubuntu
     recurse: true
   become: yes
+
+- name: Create kubectl alias
+  ansible.builtin.lineinfile:
+    path: /home/ubuntu/.bash_aliases
+    line: alias kubectl="microk8s.kubectl"

@@ -1,3 +1,11 @@
 - name: Wait for Microk8s to start
   command: "microk8s.status --wait-ready"
   changed_when: true
+
+- name: Restart Microk8s
+  shell: "microk8s.stop && microk8s.start"
+  changed_when: true
+
+- name: Wait 30s
+  ansible.builtin.pause:
+    seconds: 30
