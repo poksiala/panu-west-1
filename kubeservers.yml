@@ -1,0 +1,5 @@
+---
+- hosts: kube_servers
+  roles:
+    - common
+    - microk8s

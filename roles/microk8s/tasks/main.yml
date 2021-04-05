@@ -1,0 +1,44 @@
+---
+- name: Install Microk8s
+  community.general.snap:
+    channel: 1.20/stable
+    classic: true
+    state: present
+    name: microk8s
+  notify: Wait for Microk8s to start
+  tags: microk8s
+  become: yes
+
+- name: Add ubuntu to microk8s group
+  ansible.builtin.user:
+    name: ubuntu
+    groups: microk8s
+    append: yes
+  become: yes
+
+- name: chown ~/.kube
+  ansible.builtin.file:
+    path: /home/ubuntu/.kube
+    state: directory
+    owner: ubuntu
+    recurse: true
+
+- name: Flush handlers
+  meta: flush_handlers
+
+- name: Create kubectl alias
+  ansible.builtin.lineinfile:
+    path: /home/ubuntu/.bash_aliases
+    line: alias kubectl="microk8s.kubectl"
+
+- name: Add DNS names
+  ansible.builtin.blockinfile:
+    path: /var/snap/microk8s/current/certs/csr.conf.template
+    marker: "# {mark} ANSIBLE MANAGED BLOCK"
+    insertafter: "^DNS.*$"
+    block: |
+      DNS.6 = k8s.pohina.io
+      DNS.7 = kube00.pohina.io
+      DNS.8 = kube01.pohina.io
+      DNS.9 = kube02.pohina.io
+      DNS.10 = k8s.atk.works
