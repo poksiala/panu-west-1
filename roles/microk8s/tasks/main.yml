@@ -21,3 +21,17 @@
   ansible.builtin.lineinfile:
     path: /home/ubuntu/.bash_aliases
     line: alias kubectl="microk8s.kubectl"
+
+- name: Enable basic plugins
+  command: "microk8s.enable {{ item }}"
+  environment:
+    LC_ALL: C.UTF-8
+    LANG: C.UTF-8
+  register: output
+  changed_when: "'is already enabled' not in output.stdout_lines|list|first"
+  loop:
+    - "rbac"
+    - "dns:172.23.100.1"
+  loop_control:
+    label: "{{ item }}"
+  run_once: yes
