@@ -1,0 +1,3 @@
+- name: Include install steps
+  import_tasks: install.yml
+  run_once: yes

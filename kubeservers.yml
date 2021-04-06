@@ -4,3 +4,4 @@
     - common
     - microk8s
     - calico
+    - metallb
