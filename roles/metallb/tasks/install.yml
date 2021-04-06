@@ -25,3 +25,4 @@
   command: microk8s.kubectl patch -n metallb-system configmaps/config --patch-file=/tmp/metallb/config.patch
   register: output
   changed_when: "'(no change)' not in output.stdout_lines|list|first"
+  notify: Restart Metallb controller

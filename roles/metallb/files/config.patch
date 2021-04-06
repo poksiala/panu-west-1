@@ -2,14 +2,14 @@ data:
   config: |
     address-pools:
     - name: default
-    protocol: layer2
-    addresses:
-    - 172.23.100.150-172.23.100.199
+      protocol: layer2
+      addresses:
+      - 172.23.100.150-172.23.100.199
     - name: internal
-    protocol: layer2
-    addresses:
-    - 2001:14ba:2ea7:be11::1:1-2001:14ba:2ea7:be11::1:ffff
+      protocol: layer2
+      addresses:
+      - 2001:14ba:2ea7:be11::1:1-2001:14ba:2ea7:be11::1:ffff
     - name: public
-    protocol: layer2
-    addresses:
-    - 2001:14ba:2ea7:be11::2:1-2001:14ba:2ea7:be11::2:ffff
+      protocol: layer2
+      addresses:
+      - 2001:14ba:2ea7:be11::2:1-2001:14ba:2ea7:be11::2:ffff
