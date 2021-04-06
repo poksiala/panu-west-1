@@ -6,6 +6,6 @@
   shell: "microk8s.stop && microk8s.start"
   changed_when: true
 
-- name: Wait 30s
+- name: Wait 10s
   ansible.builtin.pause:
-    seconds: 30
+    seconds: 10

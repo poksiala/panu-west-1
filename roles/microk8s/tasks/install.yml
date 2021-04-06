@@ -23,7 +23,7 @@
     insertafter: "^DNS.*$"
     block: |
       DNS.6 = k8s.atk.works
-  notify: Wait 30s
+  notify: Wait 10s
 
 - name: Flush handlers
   meta: flush_handlers
