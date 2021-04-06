@@ -1,0 +1,17 @@
+---
+- name: Generate join token
+  ansible.builtin.set_fact:
+    join_token: "{{ lookup('password', '/dev/null chars=ascii_lowercase,digits length=32') }}"
+  when: is_primary
+
+- name: Accept joins nodes
+  command: "microk8s.add-node --token-ttl 600 --token {{ join_token }}"
+  changed_when: yes
+  when: is_primary
+
+- name: Join nodes
+  command: "microk8s.join {{ inventory_hostname }}:25000/{{ join_token }}"
+  changed_when: yes
+  when: is_primary
+  delegate_to: "{{ item }}"
+  with_items: "{{ play_hosts | difference([inventory_hostname]) }}"

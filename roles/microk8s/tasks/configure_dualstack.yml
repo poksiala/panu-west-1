@@ -1,0 +1,46 @@
+---
+- name: Add ipv6 cidr to kube-proxy
+  ansible.builtin.lineinfile:
+    path: /var/snap/microk8s/current/args/kube-proxy
+    regexp: "^--cluster-cidr.*$"
+    line: "--cluster-cidr=10.1.0.0/16,fd01::/64"
+  notify: Restart Microk8s
+
+- name: Enable dualstack in kube-proxy
+  ansible.builtin.lineinfile:
+    path: /var/snap/microk8s/current/args/kube-proxy
+    line: '--feature-gates="IPv6DualStack=true"'
+  notify: Restart Microk8s
+
+- name: Adjust service cluster ip range in kube-apiserver
+  ansible.builtin.lineinfile:
+    path: /var/snap/microk8s/current/args/kube-apiserver
+    regexp: "^--service-cluster-ip-range.*$"
+    line: "--service-cluster-ip-range=10.152.183.0/24,fd98::/108"
+  notify: Restart Microk8s
+
+- name: Enable dualstack in kube-apiserver
+  ansible.builtin.lineinfile:
+    path: /var/snap/microk8s/current/args/kube-apiserver
+    regexp: "^--feature-gates.*$"
+    line: '--feature-gates="IPv6DualStack=true"'
+  notify: Restart Microk8s
+
+- name: Enable dualstack in kube-controller-manager
+  ansible.builtin.lineinfile:
+    path: /var/snap/microk8s/current/args/kube-controller-manager
+    line: "{{ item }}"
+  with_items:
+    - '--feature-gates="IPv6DualStack=true"'
+    - "--service-cluster-ip-range=10.152.183.0/24,fd98::/108"
+    - "--cluster-cidr=10.1.0.0/16,fd01::/64"
+  notify: Restart Microk8s
+
+- name: Enable dualstack in kubelet
+  ansible.builtin.lineinfile:
+    path: /var/snap/microk8s/current/args/kubelet
+    line: '--feature-gates="IPv6DualStack=true"'
+  notify: Restart Microk8s
+
+- name: Flush handlers
+  meta: flush_handlers
