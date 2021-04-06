@@ -1,0 +1,14 @@
+spec:
+  template:
+    spec:
+      containers:
+      - env:
+        - name: IP6
+          value: autodetect
+        - name: IP6_AUTODETECTION_METHOD
+          value: can-reach=ipv6.google.com
+        - name: CALICO_IPV6POOL_CIDR
+          value: fd01::/64
+        - name: FELIX_IPV6SUPPORT
+          value: "true"
+        name: calico-node

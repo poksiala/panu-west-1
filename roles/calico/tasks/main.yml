@@ -1,0 +1,3 @@
+- name: Include patch steps
+  import_tasks: patch.yml
+  run_once: yes
