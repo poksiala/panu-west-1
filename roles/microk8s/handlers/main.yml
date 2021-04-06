@@ -4,7 +4,7 @@
 
 - name: Restart Microk8s
   shell: "microk8s.stop && microk8s.start"
-  changed_when: true
+  changed_when: yes
 
 - name: Wait 10s
   ansible.builtin.pause:

@@ -8,6 +8,11 @@
   notify: Wait for Microk8s to start
   tags: microk8s
   become: yes
+  register: installation
+
+- name: Set new_cluster variable
+  ansible.builtin.set_fact:
+    new_cluster: "{{ installation.changed }}"
 
 - name: Add ubuntu to microk8s group
   ansible.builtin.user:
@@ -25,5 +30,5 @@
       DNS.6 = k8s.atk.works
   notify: Wait 10s
 
-- name: Flush handlers
+- name: Post install handler flush
   meta: flush_handlers

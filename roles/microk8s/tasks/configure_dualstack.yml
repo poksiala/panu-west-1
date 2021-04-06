@@ -42,5 +42,5 @@
     line: '--feature-gates="IPv6DualStack=true"'
   notify: Restart Microk8s
 
-- name: Flush handlers
+- name: Post config handler flush
   meta: flush_handlers
