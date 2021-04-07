@@ -32,6 +32,7 @@
   loop:
     - "rbac"
     - "dns:172.23.100.1"
+    - helm3
   loop_control:
     label: "{{ item }}"
   run_once: yes

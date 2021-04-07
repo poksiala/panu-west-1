@@ -1,0 +1,39 @@
+---
+- name: Find data directories
+  ansible.builtin.find:
+    paths: ["/"]
+    patterns: [data*]
+    file_type: directory
+    recurse: no
+  register: search
+
+- name: Set data_paths
+  ansible.builtin.set_fact:
+    data_paths: "{{ search.files | map(attribute='path') | list | sort }}"
+
+- name: Set data_config
+  ansible.builtin.set_fact:
+    data_config: >-
+      [{% for path in data_paths -%}
+      {"path":"{{ path }}","allowScheduling":true}{% if not loop.last %},{% endif %}
+      {%- endfor %}]
+
+- name: Create longhord default disk label
+  ansible.builtin.command:
+    argv:
+      - microk8s.kubectl
+      - label
+      - nodes
+      - --overwrite=true
+      - "{{ ansible_hostname }}"
+      - node.longhorn.io/create-default-disk=config
+
+- name: Create longhord disk config label
+  ansible.builtin.command:
+    argv:
+      - microk8s.kubectl
+      - annotate
+      - nodes
+      - --overwrite=true
+      - "{{ ansible_hostname }}"
+      - node.longhorn.io/default-disks-config='{{ data_config }}'

@@ -1,0 +1,43 @@
+- name: Create /tmp/longhorn
+  ansible.builtin.file:
+    path: /tmp/longhorn
+    state: directory
+    owner: ubuntu
+    group: microk8s
+    mode: "0755"
+  become: yes
+
+- name: Copy files
+  ansible.builtin.copy:
+    src: "{{ item }}"
+    dest: "/tmp/longhorn/{{ item }}"
+    mode: "0775"
+  loop:
+    - values.yaml
+    - namespace.yaml
+    - priorityclass.yaml
+  loop_control:
+    label: "{{ item }}"
+
+- name: Create namespace
+  command: microk8s.kubectl apply -f /tmp/longhorn/namespace.yaml
+  register: output
+  changed_when: "'unchanged' not in output.stdout_lines|list|first"
+
+- name: Create priorityclass
+  command: microk8s.kubectl apply -f /tmp/longhorn/priorityclass.yaml
+  register: output
+  changed_when: "'unchanged' not in output.stdout_lines|list|first"
+
+- name: Install longhorn
+  ansible.builtin.command:
+    argv:
+      - microk8s.helm3
+      - upgrade
+      - --install
+      - --namespace=longhorn-system
+      - --repo=https://charts.longhorn.io
+      - --version=1.1.0
+      - longhorn
+      - longhorn
+      - --values=/tmp/longhorn/values.yaml

@@ -1,7 +1,8 @@
 ---
 - hosts: kube_servers
   roles:
-    - common
-    - microk8s
-    - calico
-    - metallb
+    - { name: common, tags: common }
+    - { name: microk8s, tags: microk8s }
+    - { name: calico, tags: calico }
+    - { name: metallb, tags: metallb }
+    - { name: longhorn, tags: longhorn }
