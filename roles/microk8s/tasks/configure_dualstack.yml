@@ -42,5 +42,12 @@
     line: '--feature-gates="IPv6DualStack=true"'
   notify: Restart Microk8s
 
+- name: Set node-ip in kubelet
+  ansible.builtin.lineinfile:
+    path: /var/snap/microk8s/current/args/kubelet
+    regexp: "^--node-ip.*$"
+    line: "--node-ip {{ ansible_default_ipv6.address }},{{ ansible_default_ipv4.address }}"
+  notify: Restart Microk8s
+
 - name: Post config handler flush
   meta: flush_handlers
