@@ -36,4 +36,4 @@
       - nodes
       - --overwrite=true
       - "{{ ansible_hostname }}"
-      - node.longhorn.io/default-disks-config='{{ data_config }}'
+      - node.longhorn.io/default-disks-config={{ data_config | to_json  }}
