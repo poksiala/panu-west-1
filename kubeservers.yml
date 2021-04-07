@@ -5,4 +5,4 @@
     - { name: microk8s, tags: microk8s }
     - { name: calico, tags: calico }
     - { name: metallb, tags: metallb }
-    - { name: longhorn, tags: longhorn }
+    - { name: longhorn, tags: [never, longhorn] }
