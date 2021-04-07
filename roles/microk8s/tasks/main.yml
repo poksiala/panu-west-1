@@ -7,6 +7,7 @@
 
 - name: Include clustering steps
   import_tasks: form_cluster.yml
+  run_once: yes
   when: new_cluster
 
 - name: chown ~/.kube
