@@ -36,8 +36,8 @@
       - upgrade
       - --install
       - --namespace=longhorn-system
-      - --repo=https://charts.longhorn.io
-      - --version=1.1.0
+      - --repo=https://atk-works.github.io/charts/
+      - --version=1.1.1
       - longhorn
       - longhorn
       - --values=/tmp/longhorn/values.yaml

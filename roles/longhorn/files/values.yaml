@@ -17,3 +17,9 @@ ingress:
 
 # Configure a pod security policy in the Longhorn namespace to allow privileged pods
 enablePSP: true
+
+service:
+  manager:
+    ipFamilyPolicy: SingleStack
+    ipFamilies:
+      - IPv4
