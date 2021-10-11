@@ -14,6 +14,7 @@
     owner: ubuntu
     group: ubuntu
     mode: u=rw,g=rw,o=r
+    state: touch
   tags: common
 
 - name: Disable swap for current session

@@ -29,6 +29,7 @@
     block: |
       DNS.6 = k8s.pohina.io
   notify: Wait 10s
+  become: yes
 
 - name: Post install handler flush
   meta: flush_handlers

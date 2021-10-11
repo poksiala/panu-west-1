@@ -18,7 +18,7 @@
       {"path":"{{ path }}","allowScheduling":true}{% if not loop.last %},{% endif %}
       {%- endfor %}]
 
-- name: Create longhord default disk label
+- name: Create longhord default disk annotation
   ansible.builtin.command:
     argv:
       - microk8s.kubectl
@@ -28,7 +28,7 @@
       - "{{ ansible_hostname }}"
       - node.longhorn.io/create-default-disk=config
 
-- name: Create longhord disk config label
+- name: Create longhord disk config annotation
   ansible.builtin.command:
     argv:
       - microk8s.kubectl

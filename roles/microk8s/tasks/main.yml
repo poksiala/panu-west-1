@@ -34,3 +34,4 @@
   loop_control:
     label: "{{ item }}"
   run_once: yes
+  become: yes
