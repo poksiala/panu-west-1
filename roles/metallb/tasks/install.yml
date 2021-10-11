@@ -5,24 +5,3 @@
     LANG: C.UTF-8
   register: output
   changed_when: "'is already enabled' not in output.stdout_lines|list|first"
-
-- name: Create /tmp/metallb
-  ansible.builtin.file:
-    path: /tmp/metallb
-    state: directory
-    owner: ubuntu
-    group: microk8s
-    mode: "0755"
-  become: yes
-
-- name: Copy patch file
-  ansible.builtin.copy:
-    src: "config.patch"
-    dest: "/tmp/metallb/config.patch"
-    mode: "0775"
-
-- name: Apply config.patch
-  command: microk8s.kubectl patch -n metallb-system configmaps/config --patch-file=/tmp/metallb/config.patch
-  register: output
-  changed_when: "'(no change)' not in output.stdout_lines|list|first"
-  notify: Restart Metallb controller

@@ -2,9 +2,6 @@
 - name: Include install steps
   import_tasks: install.yml
 
-- name: Include dualstack configuration
-  import_tasks: configure_dualstack.yml
-
 - name: Include clustering steps
   import_tasks: form_cluster.yml
   run_once: yes

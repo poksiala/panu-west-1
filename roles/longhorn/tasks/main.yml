@@ -1,6 +1,2 @@
 - name: Include annotation steps
   import_tasks: annotate_nodes.yml
-
-- name: Include install steps
-  import_tasks: install.yml
-  run_once: yes

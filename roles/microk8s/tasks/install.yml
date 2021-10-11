@@ -1,7 +1,7 @@
 ---
 - name: Install Microk8s
   community.general.snap:
-    channel: 1.21/stable
+    channel: 1.22/stable
     classic: true
     state: present
     name: microk8s
@@ -27,7 +27,7 @@
     marker: "# {mark} ANSIBLE MANAGED BLOCK"
     insertafter: "^DNS.*$"
     block: |
-      DNS.6 = k8s.atk.works
+      DNS.6 = k8s.pohina.io
   notify: Wait 10s
 
 - name: Post install handler flush

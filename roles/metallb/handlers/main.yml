@@ -1,2 +1,0 @@
-- name: Restart Metallb controller
-  command: microk8s.kubectl -n metallb-system delete pod -l component=controller
