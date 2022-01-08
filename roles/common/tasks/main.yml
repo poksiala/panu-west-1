@@ -4,6 +4,7 @@
     name:
       - vim
       - htop
+      - lm-sensors
     state: present
   become: yes
   tags: common
