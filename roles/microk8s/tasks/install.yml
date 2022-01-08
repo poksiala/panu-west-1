@@ -31,5 +31,29 @@
   notify: Wait 10s
   become: yes
 
+- name: Add monitoring parameters to kube-proxy
+  ansible.builtin.blockinfile:
+    path: /var/snap/microk8s/current/args/kube-proxy
+    marker: "# {mark} ANSIBLE MANAGED BLOCK"
+    block: |
+      --metrics-bind-address={{ ansible_default_ipv4.address }}:10249
+  become: yes
+
+- name: Add monitoring parameters to kube-scheduler
+  ansible.builtin.blockinfile:
+    path: /var/snap/microk8s/current/args/kube-scheduler
+    marker: "# {mark} ANSIBLE MANAGED BLOCK"
+    block: |
+      --bind-address={{ ansible_default_ipv4.address }}
+  become: yes
+
+- name: Add monitoring parameters to kube-controller-manager
+  ansible.builtin.blockinfile:
+    path: /var/snap/microk8s/current/args/kube-controller-manager
+    marker: "# {mark} ANSIBLE MANAGED BLOCK"
+    block: |
+      --authorization-always-allow-paths="/healthz,/readyz,/livez,/metrics"
+  become: yes
+
 - name: Post install handler flush
   meta: flush_handlers
